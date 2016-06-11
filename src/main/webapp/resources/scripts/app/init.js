@@ -3,32 +3,32 @@
 require.config({
     baseUrl: Environment_APP_PATH + "resources/",
     paths: {
-        "knockout": "scripts/lib/knockout-2.2.0",
-        "jquery": "scripts/lib/jquery.min",
+        "knockout": "scripts/lib/knockout-3.4.0",
+        "jquery": "scripts/lib/jquery-1.10.2.min",
         "jquery.ui": "scripts/lib/jquery-ui-1.10.4.custom.min",      
-        "appContext": "scripts/app/appContext",
+        "appContext": "scripts/app/appContext",        
         "util":  "scripts/app/util",
         "pageScripts":  "scripts/app/page",
         "skel": "scripts/lib/skel.min",
-        
+        "customBindings": "scripts/app/customBindings"
     },
     waitSeconds: 0,
     shim: {
-        "jquery.ui": ["jquery"],
-        "customBindings": ["knockout", "jquery.ui"],
+        "jquery.ui": ["jquery"],        
         "skel": ["jquery"],
         "util": ["jquery"],
-        "pageScripts": ["jquery", "skel"]
+        "pageScripts": ["jquery", "skel"],
+        "customBindings": ["knockout", "jquery.ui"]
     },
 });
 
 
 var _globalContext = null;
 
-require(["knockout", "util", "pageScripts", "appContext"], function (ko, util, pageScripts, AppContext) {
+require(["knockout", "util", "pageScripts", "appContext", "jquery.ui"], function (ko, util, pageScripts, AppContext) {
 
-    function init() {       
-
+    function init() { 
+    	
         _globalContext = new AppContext();
         _globalContext.init();
 

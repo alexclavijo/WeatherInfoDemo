@@ -1,54 +1,65 @@
 ﻿
-define(["knockout", "jquery", "scripts/app/model/weatherInfo", "scripts/app/model/weatherPic"], function (ko, $, WeatherInfo, WeatherPic) {
+define(["knockout", "jquery", "scripts/app/model/weatherInfo"], function (ko, $, WeatherInfo) {
 
     return function () {
 
-        var self = this;       
-
-        self.zipCode = ko.observable();       
-        self.zips = ko.observableArray();   
-       
-        self.weatherInfo = new WeatherInfo();
+        var self = this;
+        
+        self.zips = ko.observableArray();        
+        
         self.pics = ko.observableArray();
         
-        self.zipCode.subscribe(function(newValue) {
-        	self.getWeatherInfo();
-        });        
+        self.weatherData = ko.observableArray();
+                     
         
-        self.getWeatherInfo = function() {        	
+        self.populateWeatherInfo = function(weatherInfoObj, zipItem) {        	
         	$.ajax({
                 dataType: "json",
-                type: "POST",
-                //contentType:"application/json; charset=utf-8",
+                type: "POST",               
                 url: Environment_APP_PATH + "api/weatherInfo",
                 data: { 
-                	zipCode: self.zipCode() 
+                	zipCode: zipItem.zipCode() 
                 },
-                success: self.populateWeatherInfo,
-                
-                error: function (error) {
-                	console.log(error);          
+                success: function(response, status, jqXHR){
+                	
+                	if(response){
+                		var weatherPic = ko.utils.arrayFirst(self.pics(), function(item) {
+                    	    return item.weatherId === response.weatherId;
+                    	});
+                    	
+                    	if(weatherPic.pictureUrl){        		
+                    		weatherInfoObj.picUrl(weatherPic.pictureUrl);
+                    	}        	
+                    	
+                    	weatherInfoObj.city(response.city);
+                    	weatherInfoObj.state(response.state);
+                    	weatherInfoObj.weatherStation(response.weatherStation);
+                    	weatherInfoObj.description(response.description);
+                    	weatherInfoObj.pressure(response.pressure);
+                    	weatherInfoObj.temperature(response.temperature + '°F');
+                    	weatherInfoObj.relativeHumidity(response.relativeHumidity);  
+                	} 
+                	else{
+                		weatherInfoObj.init();
+                	}
+                	   
+                },                
+                error: function (xhr, status, exception) {
+                	console.log(status, exception);            
                 }
             });
         };
         
-        self.populateWeatherInfo = function (response) {       	
-        	
-        	var weatherPic = ko.utils.arrayFirst(self.pics(), function(item) {
-        	    return item.weatherId === response.weatherId;
-        	});
-        	
-        	if(weatherPic.pictureUrl){        		
-        		self.weatherInfo.picUrl(weatherPic.pictureUrl);
-        	}        	
-        	
-        	self.weatherInfo.city(response.city);
-        	self.weatherInfo.state(response.state);
-        	self.weatherInfo.weatherStation(response.weatherStation);
-        	self.weatherInfo.description(response.description);
-        	self.weatherInfo.pressure(response.pressure);
-        	self.weatherInfo.temperature(response.temperature + '°F');
-        	self.weatherInfo.relativeHumidity(response.relativeHumidity);        	
+        self.setupCityAccordion = function() {        	
+        	setTimeout(function(){        		
+        		$("#city-accordion").show();
+        		$("#city-accordion").accordion({
+        			heightStyle: "content",
+        			collapsible : true, 
+        			active : 'none'
+        	    });
+        		
+        	}, 0);      	
         };
         
         self.getWeatherPics = function() {        	
@@ -56,17 +67,53 @@ define(["knockout", "jquery", "scripts/app/model/weatherInfo", "scripts/app/mode
                 dataType: "json",
                 type: "GET",          
                 url: Environment_APP_PATH + "api/weatherPics",               
-                success: function (response) {
+                success: function (response, status, jqXHR) {
                 	self.pics(response);
                 },
-                error: function (error) {
-                	console.log(error);          
+                error: function (xhr, status, exception) {
+                	console.log(status, exception);          
                 }
             });
         };
         
+        
+        self.weatherBtnClickAction = function(){        	
+        	ko.utils.arrayForEach(self.zips(), function(item, index) {
+    	        var zipCode = item.zipCode();
+    	        if(zipCode && zipCode != '?'){
+    	        	self.populateWeatherInfo(self.weatherData()[index].weatherInfo, item);  	        	
+    	        }
+    	    });
+        	
+        	$(".close").click();
+        };
+        
+        self.openMenuClick = function(){
+        	$('body').addClass('is-menu-visible');
+        };
+        
         self.init = function () {
-        	 self.pics(self.getWeatherPics());
+        	
+        	self.getWeatherPics();       	
+        	
+        	self.zips([
+        	    { zipCode: ko.observable("?") },
+        	    { zipCode: ko.observable("?") },
+        	    { zipCode: ko.observable("?") },
+        	    { zipCode: ko.observable("?") },
+        	    { zipCode: ko.observable("?") }
+        	]);
+        	
+        	self.weatherData([
+        	    { weatherInfo: new WeatherInfo() },
+        	    { weatherInfo: new WeatherInfo() },
+        	    { weatherInfo: new WeatherInfo() },
+        	    { weatherInfo: new WeatherInfo() },
+        	    { weatherInfo: new WeatherInfo() }
+        	]);  
+        	
+        	self.setupCityAccordion();
+        	
         };
     };
 

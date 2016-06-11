@@ -1,6 +1,8 @@
 package com.weather.info.demo.controller.api;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 
@@ -24,8 +26,15 @@ public class WebApiController {
 	
 	@RequestMapping(value="/weatherInfo", method = RequestMethod.POST)
 	@ResponseBody
-	public WeatherInfo getWeatherInfo(@RequestParam String zipCode) {		
-		return weatherClientWS.getWeatherByZip(zipCode);		
+	public WeatherInfo getWeatherInfo(@RequestParam String zipCode) {			
+		try{
+		
+			return validateZipCode(zipCode) ? weatherClientWS.getWeatherByZip(zipCode) : null;
+		
+		}catch(Exception ex){
+			System.err.println(ex.getMessage());
+			return null;
+		}			
 	} 
 	
 	@RequestMapping(value="/weatherPics", method = RequestMethod.GET)
@@ -34,4 +43,14 @@ public class WebApiController {
 		return weatherClientWS.getWeatherPictures();		
 	} 
 		
+	private boolean validateZipCode(String zip){		
+		 
+		String regex = "^[0-9]{5}(?:-[0-9]{4})?$";
+		 
+		Pattern pattern = Pattern.compile(regex);
+		 
+		Matcher matcher = pattern.matcher(zip);
+		
+		return matcher.matches();
+	}
 }

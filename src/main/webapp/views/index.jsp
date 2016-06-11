@@ -2,9 +2,11 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<title>Generic - Phantom by HTML5 UP</title>
+		<title>Weather Info - Demo</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />	
+		<link rel="shortcut icon" href="http://vortex.accuweather.com/adc2010/images/favicons/awx-2013-master.ico" />		
+		<link rel="stylesheet" type="text/css" href="<spring:url value="/resources/styles/jquery-ui.css" />"/>	
 		<link rel="stylesheet" type="text/css" href="<spring:url value="/resources/styles/main.css" />"/>				
 		<!--[if lte IE 9]><link rel="stylesheet" href="<spring:url value="/styles/ie9.css" />" /><![endif]-->
 	
@@ -24,65 +26,97 @@
 							<!-- Nav -->
 								<nav>
 									<ul>
-										<li><a href="#menu">Menu</a></li>
+										<li><a id="main-menu" href="#menu">Cities</a></li>
 									</ul>
 								</nav>
-
 						</div>
 					</header>
 
 				<!-- Menu -->
 					<nav id="menu">
-						<h2>City Picker</h2>
+						<h2 style="margin-bottom: 20px">Cities</h2>
 						<ul>
 							<li>
-							   <a href="#">Weather Menu</a>
+							   <div>Zip Code 1</div>
 							   <div>
-							       <input data-bind="value: zipCode" />
+							       <input min="1" type="number" data-bind="value: zips()[0].zipCode" />
 							   </div>							
 							</li>
-							<li><a href="#">Weather Info</a></li>
-							<li><a href="#">Weather </a></li>							
+							<li>
+							  <div>Zip Code 2</div>
+							   <div>
+							       <input  min="1" type="number" data-bind="value: zips()[1].zipCode" />
+							   </div>							
+							</li>
+							<li>
+							   <div>Zip Code 3</div>
+							   <div>
+							       <input   min="1" type="number" data-bind="value: zips()[2].zipCode" />
+							   </div>							
+							</li>	
+							<li>
+							   <div>Zip Code 4</div>
+							   <div>
+							       <input  min="1" type="number" data-bind="value: zips()[3].zipCode" />
+							   </div>							
+							</li>
+							<li>
+							   <div>Zip Code 5</div>
+							   <div>
+							       <input  min="1" type="number" data-bind="value: zips()[4].zipCode" />
+							   </div>							
+							</li>					
 						</ul>
+						
+						<div>
+							<button id="weather-btn" data-bind="click: weatherBtnClickAction">Weather Info</button>
+						</div>
+						
 					</nav>
 
 				<!-- Main -->
 					<div id="main">
 						<div class="inner">
-							<h1>Weather Info Demo!!!</h1>
-							<div>
-								
-								<ul>
-									<li>
-										<img data-bind="attr: { 'src': weatherInfo.picUrl }"  />
-										<label>Description: <span data-bind="text: weatherInfo.description"></span></label>										
-									</li>
-								
-									<li>
-										<label>City: <span data-bind="text: weatherInfo.city"></span></label>	
-									</li>
-									
-									<li>
-										<label>State: <span data-bind="text: weatherInfo.state"></span></label>	
-									</li>
-									
-									<li>										
-										<label>Weather Station: <span data-bind="text: weatherInfo.weatherStation"></span></label>	
-									</li>	
-									
-									<li>
-										<label>Pressure: <span data-bind="text: weatherInfo.pressure"></span></label>	
-									</li>	
-									
-									<li>
-										<label>Temperature: <span data-bind="text: weatherInfo.temperature"></span></label>
-									</li>
-									
-									<li>
-										<label>Relative Humidity: <span data-bind="text: weatherInfo.relativeHumidity"></span></label>
-									</li>							
+							<h1 style="margin-bottom: 20px">Weather Info Demo!!!</h1>													
+							<div class="accordion-wrapper">							
+								<div id="city-accordion" style="display: none" data-bind="foreach: weatherData">
+									  
+								  <h3><a data-bind="text:  'City' + ($index() + 1) + '(' +  $parent.zips()[$index()].zipCode() + ')'" href="#"></a></h3>
+								  <div>
+										<ul>
+											<li>
+												<img data-bind="attr: { 'src': weatherInfo.picUrl }"  />
+												<label>Description: <span data-bind="text: weatherInfo.description"></span></label>										
+											</li>
+										
+											<li>
+												<label>City: <span data-bind="text: weatherInfo.city"></span></label>	
+											</li>
+											
+											<li>
+												<label>State: <span data-bind="text: weatherInfo.state"></span></label>	
+											</li>
+											
+											<li>										
+												<label>Weather Station: <span data-bind="text: weatherInfo.weatherStation"></span></label>	
+											</li>	
+											
+											<li>
+												<label>Pressure: <span data-bind="text: weatherInfo.pressure"></span></label>	
+											</li>	
+											
+											<li>
+												<label>Temperature: <span data-bind="text: weatherInfo.temperature"></span></label>
+											</li>
+											
+											<li>
+												<label>Relative Humidity: <span data-bind="text: weatherInfo.relativeHumidity"></span></label>
+											</li>						
 																	
-								</ul>
+										</ul>
+									  
+									 </div>								 
+								</div>							
 								
 							</div>
 						</div>

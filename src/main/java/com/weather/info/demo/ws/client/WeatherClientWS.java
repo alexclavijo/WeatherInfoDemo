@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
@@ -20,7 +21,8 @@ import com.weather.info.demo.ws.generated.WeatherReturn;
 @Service
 public class WeatherClientWS implements IWeatherClientWS {
 
-	public static final String WEB_SERVICE_URL = "http://wsf.cdyne.com/WeatherWS/Weather.asmx";
+	@Value("${webservice.url}")
+	private String webServiceUrl;
 	
 	@Autowired
     private WebServiceTemplate webServiceTemplate;
@@ -30,7 +32,7 @@ public class WeatherClientWS implements IWeatherClientWS {
 		GetCityWeatherByZIP request = new GetCityWeatherByZIP();
 		request.setZIP(zipCode);		
 
-		GetCityWeatherByZIPResponse response = (GetCityWeatherByZIPResponse) webServiceTemplate.marshalSendAndReceive(WEB_SERVICE_URL, request);
+		GetCityWeatherByZIPResponse response = (GetCityWeatherByZIPResponse) webServiceTemplate.marshalSendAndReceive(webServiceUrl, request);
 
 		WeatherReturn result = response.getGetCityWeatherByZIPResult();
 				
@@ -51,7 +53,7 @@ public class WeatherClientWS implements IWeatherClientWS {
 		
 		GetWeatherInformation request = new GetWeatherInformation();		
 		
-		GetWeatherInformationResponse response = (GetWeatherInformationResponse) webServiceTemplate.marshalSendAndReceive(WEB_SERVICE_URL, request);
+		GetWeatherInformationResponse response = (GetWeatherInformationResponse) webServiceTemplate.marshalSendAndReceive(webServiceUrl, request);
 		
 		for (WeatherDescription desc : response.getGetWeatherInformationResult().getWeatherDescription()) {
 			pics.add(new WeatherPicture(desc.getWeatherID(), desc.getPictureURL()));

@@ -1,5 +1,4 @@
-﻿function initCustomBinding(ko) {
-
+﻿function initCustomBinding(ko) {		
     
 }
 
