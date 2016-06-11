@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:lang="http://www.springframework.org/schema/lang"
+	xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
+		http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-4.0.xsd">
+      
+    <context:annotation-config/>
+	
+	<!-- Scans the classpath of this application for @Components to deploy as beans -->
+	<context:component-scan base-package="com.weather.info.demo"/>	
+	
+	<!-- ${property}-->
+	<context:property-placeholder location="/WEB-INF/app-config.properties" />		
+	
+	
+	<!-- Web Config -->  
+	<mvc:annotation-driven /> 	
+	 
+	<mvc:resources location="/resources/" mapping="/resources/**"/>
+	 
+    <bean name="handlerAdapter" class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+        <property name="webBindingInitializer">
+            <bean class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
+                <property name="conversionService" ref="conversionService"></property>
+                <property name="validator">
+                    <bean class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
+                </property>
+            </bean>
+        </property>
+        <property name="messageConverters">
+            <list>
+                <bean class="org.springframework.http.converter.ByteArrayHttpMessageConverter"/>
+                <bean class="org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter"/>
+                <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
+                <bean class="org.springframework.http.converter.StringHttpMessageConverter"></bean>
+                <bean class="org.springframework.http.converter.ResourceHttpMessageConverter"></bean>
+                <bean class="org.springframework.http.converter.xml.SourceHttpMessageConverter"></bean>                
+            </list>
+        </property>
+    </bean>
+
+    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean" />
+
+    <bean name="handlerMapping" class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+        <property name="useTrailingSlashMatch" value="true"></property>
+    </bean>
+
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver" >
+        <property name="prefix">
+            <value>/views/</value>
+        </property>
+        <property name="suffix">
+            <value>.jsp</value>
+        </property>
+    </bean>
+    
+    <bean id="soapMessageFactory" class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+        <property name="soapVersion">
+            <util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_12"/>
+        </property>
+    </bean>  
+ 	
+ 	<bean id="marshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+ 		<property name="contextPath" value="com.weather.info.demo.ws.generated" />
+ 	</bean>
+  
+    <bean id="webServiceTemplate" class="org.springframework.ws.client.core.WebServiceTemplate">
+        <constructor-arg ref="soapMessageFactory"/>
+        <property name="marshaller" ref="marshaller"/>
+        <property name="unmarshaller" ref="marshaller"/>
+        <property name="defaultUri" value="http://wsf.cdyne.com/WeatherWS/Weather.asmx?WSDL"/>
+    </bean>   
+     
+</beans>

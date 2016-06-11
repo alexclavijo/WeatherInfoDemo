@@ -1,0 +1,6 @@
+﻿function initCustomBinding(ko) {
+
+    
+}
+
+
